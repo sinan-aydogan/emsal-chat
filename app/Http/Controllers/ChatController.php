@@ -27,7 +27,7 @@ class ChatController extends Controller
         ]);
         $message->save();
 
-        Event::dispatch(new ChatMessagePublished());
+        \event(new ChatMessagePublished());
 
         return redirect()->route('chat.index');
     }

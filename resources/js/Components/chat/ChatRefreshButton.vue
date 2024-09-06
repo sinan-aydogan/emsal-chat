@@ -3,7 +3,7 @@ defineEmits(['refresh'])
 </script>
 
 <template>
-    <<button @click="$emit('refresh')" type="button" class="button">Yenile</button>
+    <button @click="$emit('refresh')" type="button" class="button">Yenile</button>
 </template>
 
 <style scoped>

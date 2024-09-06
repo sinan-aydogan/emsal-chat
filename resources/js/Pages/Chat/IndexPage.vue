@@ -17,6 +17,8 @@ const props = defineProps({
 
 const {messages} = toRefs(props);
 
+const lastUpdated = ref(new Date());
+
 const form = useForm({
     content: "",
 });
@@ -29,6 +31,7 @@ const handleRefresh = () => {
         only: ['messages'],
         onSuccess: () => {
             refChat.value.scrollTop = refChat.value.scrollHeight;
+            lastUpdated.value = new Date();
         },
     });
 };
@@ -44,8 +47,10 @@ const handleSendMessage = () => {
     });
 };
 
-onMounted(() => {
+onMounted(async () => {
     refChat.value.scrollTop = refChat.value.scrollHeight;
+
+    lastUpdated.value = new Date();
 
     window.Echo.channel('chat')
         .listen('ChatMessagePublished', (e) => {
@@ -67,7 +72,10 @@ onMounted(() => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 p-6 space-y-4 overflow-hidden shadow-sm sm:rounded-lg">
                     <!--Chat Refresh-->
-                    <chat-refresh-button @refresh="handleRefresh"/>
+                    <div>
+                        <chat-refresh-button @refresh="handleRefresh"/>
+                        <span class="last-updated" v-text="lastUpdated.toLocaleTimeString()"></span>
+                    </div>
 
                     <!--Chat Body-->
                     <div class="chat" ref="refChat">
@@ -88,6 +96,12 @@ onMounted(() => {
     overflow-y: scroll;
     padding: 20px;
     scroll-behavior: smooth;
+}
+
+.last-updated{
+    margin-left: 10px;
+    font-size: 12px;
+    color: #6b7280;
 }
 
 @media (prefers-color-scheme: dark) {
