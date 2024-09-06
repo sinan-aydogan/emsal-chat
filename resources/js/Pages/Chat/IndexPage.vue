@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import ChatMessage from "@/Components/chat/ChatMessage.vue";
@@ -46,6 +46,11 @@ const handleSendMessage = () => {
 
 onMounted(() => {
     refChat.value.scrollTop = refChat.value.scrollHeight;
+
+    window.Echo.channel('chat')
+        .listen('ChatMessagePublished', (e) => {
+            console.log('New message received:', e);
+        });
 });
 </script>
 

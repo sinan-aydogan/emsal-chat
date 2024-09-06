@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\ChatMessagePublished;
 use App\Http\Requests\ChatStoreRequest;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 
 class ChatController extends Controller
 {
@@ -24,6 +26,8 @@ class ChatController extends Controller
             'content' => $request['content']
         ]);
         $message->save();
+
+        Event::dispatch(new ChatMessagePublished());
 
         return redirect()->route('chat.index');
     }

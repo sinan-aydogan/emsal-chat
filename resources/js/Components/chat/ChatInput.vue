@@ -1,24 +1,17 @@
-<script setup lang="ts">
+<script setup>
 import {computed, ref, toRefs} from "vue";
 
-const props = defineProps({
-    modelValue: {
-        type: String,
-        required: true,
-        default: '',
-    },
-
-})
-const {modelValue} = toRefs(props)
-
+const modelValue = defineModel()
 defineEmits(['update:modelValue','submit'])
 
-const isDisabled = computed(() => 10>modelValue.value?.length)
+const isDisabled = computed(() => {
+    return 10 >modelValue.value.trim().length
+})
 </script>
 
 <template>
     <div class="wrapper">
-        <textarea :value="modelValue"  @keydown.enter="!isDisabled ? $emit('submit') : null" @input="(e)=>$emit('update:modelValue', e.target.value)" class="input" placeholder="Mesajınızı buraya yazınız..."></textarea>
+        <textarea v-model="modelValue"  @keydown.enter="!isDisabled ? $emit('submit') : null" class="input" placeholder="Mesajınızı buraya yazınız..."></textarea>
         <button @click="$emit('submit') " :disabled="isDisabled" class="submit-button">Gönder</button>
     </div>
 </template>
