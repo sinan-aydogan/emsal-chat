@@ -18,7 +18,7 @@ const props = defineProps({
 const {messages} = toRefs(props);
 
 const lastUpdated = ref(new Date());
-const announcedTime = ref(new Date());
+const announcedTime = ref(null);
 
 const form = useForm({
     content: "",
@@ -61,6 +61,8 @@ onMounted(async () => {
     refChat.value.scrollTop = refChat.value.scrollHeight;
 
     lastUpdated.value = new Date();
+
+    showTime(new Date());
 
     /*Chat Subscribe*/
     window.Echo.channel('chat')
