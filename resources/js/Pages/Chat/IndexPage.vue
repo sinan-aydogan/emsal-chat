@@ -49,6 +49,7 @@ onMounted(() => {
 
     window.Echo.channel('chat')
         .listen('ChatMessagePublished', (e) => {
+            handleRefresh();
             console.log('New message received:', e);
         });
 });
