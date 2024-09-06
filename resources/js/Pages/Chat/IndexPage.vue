@@ -3,7 +3,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import ChatMessage from "@/Components/chat/ChatMessage.vue";
 import ChatInput from "@/Components/chat/ChatInput.vue";
-import {onMounted, ref, toRefs, watch, watchEffect} from "vue";
+import {onMounted, ref, toRefs} from "vue";
 import {router, useForm} from "@inertiajs/vue3";
 import ChatRefreshButton from "@/Components/chat/ChatRefreshButton.vue";
 
@@ -18,6 +18,7 @@ const props = defineProps({
 const {messages} = toRefs(props);
 
 const lastUpdated = ref(new Date());
+const announcedTime = ref(new Date());
 
 const form = useForm({
     content: "",
@@ -47,15 +48,32 @@ const handleSendMessage = () => {
     });
 };
 
+
+const showTime = (time) => {
+    announcedTime.value = new Date(time);
+
+    setTimeout(() => {
+        announcedTime.value = null;
+    }, 10000);
+};
+
 onMounted(async () => {
     refChat.value.scrollTop = refChat.value.scrollHeight;
 
     lastUpdated.value = new Date();
 
+    /*Chat Subscribe*/
     window.Echo.channel('chat')
         .listen('ChatMessagePublished', (e) => {
             handleRefresh();
             console.log('New message received:', e);
+        });
+
+    /*Time Subscribe*/
+    window.Echo.channel('time')
+        .listen('TimeAnnounce', (e) => {
+            showTime(e.time);
+            console.log('New time received:', e);
         });
 });
 </script>
@@ -63,7 +81,10 @@ onMounted(async () => {
 <template>
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Chat</h2>
+            <div class="flex justify-between items-center">
+                <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">Chat</h2>
+                <span v-if="announcedTime" class="text-amber-500 bounce-animation" v-text="`guk guk! saat: ${announcedTime.toLocaleTimeString()}`"></span>
+            </div>
         </template>
 
 
@@ -102,6 +123,22 @@ onMounted(async () => {
     margin-left: 10px;
     font-size: 12px;
     color: #6b7280;
+}
+
+.bounce-animation {
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-30px);
+    }
+    60% {
+        transform: translateY(-15px);
+    }
 }
 
 @media (prefers-color-scheme: dark) {
